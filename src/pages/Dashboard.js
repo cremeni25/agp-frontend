@@ -1,5 +1,6 @@
 import React from "react";
 import { supabase } from "../supabaseClient";
+import DailyData from "./DailyData";
 
 export default function Dashboard({ user }) {
   async function logout() {
@@ -8,18 +9,11 @@ export default function Dashboard({ user }) {
   }
 
   return (
-    <div style={{
-      background: "#0f172a",
-      color: "white",
-      height: "100vh",
-      padding: 40
-    }}>
-      <h1>Bem-vindo ao AGP</h1>
+    <div>
+      <DailyData user={user} />
 
-      <p><strong>Email:</strong> {user.email}</p>
-      <p><strong>ID:</strong> {user.id}</p>
-
-      <button onClick={logout} style={{ marginTop: 20 }}>
+      <button onClick={logout}
+        style={{ position: "absolute", top: 20, right: 20 }}>
         Sair
       </button>
     </div>
