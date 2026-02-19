@@ -44,13 +44,18 @@ export default function ProfileSetup({ user }) {
       <form onSubmit={salvarPerfil} style={{ width: 320 }}>
         <h2>Completar Perfil</h2>
 
-        <input placeholder="Nome" value={nome}
+        <input
+          placeholder="Nome"
+          value={nome}
           onChange={e => setNome(e.target.value)}
-          style={{ width: "100%", marginBottom: 10 }} />
+          style={{ width: "100%", marginBottom: 10 }}
+        />
 
-        <select value={funcao}
+        <select
+          value={funcao}
           onChange={e => setFuncao(e.target.value)}
-          style={{ width: "100%", marginBottom: 10 }}>
+          style={{ width: "100%", marginBottom: 10 }}
+        >
           <option value="">Função</option>
           <option>Atleta</option>
           <option>Técnico</option>
@@ -60,17 +65,44 @@ export default function ProfileSetup({ user }) {
           <option>Gestor</option>
         </select>
 
-        <input placeholder="Clube" value={clube}
+        <input
+          placeholder="Clube"
+          value={clube}
           onChange={e => setClube(e.target.value)}
-          style={{ width: "100%", marginBottom: 10 }} />
+          style={{ width: "100%", marginBottom: 10 }}
+        />
 
-        <input placeholder="Esporte" value={esporte}
+        {/* CAMPO ESPORTE PADRONIZADO */}
+        <select
+          value={esporte}
           onChange={e => setEsporte(e.target.value)}
-          style={{ width: "100%", marginBottom: 10 }} />
+          style={{ width: "100%", marginBottom: 10 }}
+        >
+          <option value="">Selecione o Esporte</option>
 
-        <input type="number" placeholder="Idade" value={idade}
+          <option>Natação - Piscina</option>
+          <option>Natação - Águas Abertas</option>
+
+          <option>Atletismo - Rua</option>
+          <option>Atletismo - Pista</option>
+
+          <option>Futebol - Campo</option>
+          <option>Futebol - Society</option>
+          <option>Futebol - Salão</option>
+
+          <option>Basquete</option>
+
+          <option>Vôlei - Quadra</option>
+          <option>Vôlei - Praia</option>
+        </select>
+
+        <input
+          type="number"
+          placeholder="Idade"
+          value={idade}
           onChange={e => setIdade(e.target.value)}
-          style={{ width: "100%", marginBottom: 10 }} />
+          style={{ width: "100%", marginBottom: 10 }}
+        />
 
         <button type="submit" style={{ width: "100%" }}>
           Salvar Perfil
