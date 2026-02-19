@@ -30,7 +30,7 @@ export default function Dashboard() {
 
 async function logout() {
   await supabase.auth.signOut();
-  window.location.href = "/";
+  window.location.reload();
 }
 
   if (loading) {
