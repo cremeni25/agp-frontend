@@ -1,6 +1,6 @@
 import React from "react";
 import { supabase } from "../supabaseClient";
-import DailyData from "./DailyData";
+import DashboardAtleta from "./DashboardAtleta";
 
 export default function Dashboard({ user }) {
   async function logout() {
@@ -10,10 +10,12 @@ export default function Dashboard({ user }) {
 
   return (
     <div>
-      <DailyData user={user} />
+      <DashboardAtleta user={user} />
 
-      <button onClick={logout}
-        style={{ position: "absolute", top: 20, right: 20 }}>
+      <button
+        onClick={logout}
+        style={{ position: "absolute", top: 20, right: 20 }}
+      >
         Sair
       </button>
     </div>
