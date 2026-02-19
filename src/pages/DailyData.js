@@ -15,7 +15,7 @@ export default function DailyData({ user }) {
       .from("dados_biologicos")
       .insert([
         {
-          auth_id: user.id,
+          atleta_id: user.id,
           peso,
           qualidade_sono: sono,
           nivel_fadiga: fadiga,
