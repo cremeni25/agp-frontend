@@ -16,8 +16,6 @@ export default function Login() {
 
     if (error) {
       setMessage(error.message);
-    } else {
-      setMessage("Login realizado com sucesso!");
     }
   }
 
@@ -30,17 +28,7 @@ export default function Login() {
     if (error) {
       setMessage(error.message);
     } else {
-      setMessage("Usuário criado! Verifique seu email.");
-    }
-  }
-
-  async function resetPassword() {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-
-    if (error) {
-      setMessage(error.message);
-    } else {
-      setMessage("Email de recuperação enviado.");
+      setMessage("Conta criada! Verifique seu email.");
     }
   }
 
@@ -78,10 +66,6 @@ export default function Login() {
 
         <button type="button" onClick={handleRegister} style={{ width: "100%", marginTop: 10 }}>
           Criar Conta
-        </button>
-
-        <button type="button" onClick={resetPassword} style={{ width: "100%", marginTop: 10 }}>
-          Esqueci Senha
         </button>
 
         <p>{message}</p>
