@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "../supabaseClient";
 
-export default function ProfileSetup({ user }) {
+export default function ProfileSetup() {
   const [nome, setNome] = useState("");
   const [funcao, setFuncao] = useState("");
   const [clube, setClube] = useState("");
@@ -12,11 +12,23 @@ export default function ProfileSetup({ user }) {
   async function salvarPerfil(e) {
     e.preventDefault();
 
+    // 🔹 Pega o ID REAL da sessão autenticada
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      setMsg("Sessão não encontrada. Faça login novamente.");
+      return;
+    }
+
+    const userId = session.user.id;
+
     const { error } = await supabase
       .from("perfis_atletas")
       .insert([
         {
-          auth_id: user.id,
+          auth_id: userId,
           nome,
           funcao,
           clube,
@@ -28,6 +40,7 @@ export default function ProfileSetup({ user }) {
     if (error) {
       setMsg(error.message);
     } else {
+      // 🔹 Após salvar, recarrega para App detectar perfil
       window.location.reload();
     }
   }
@@ -72,7 +85,6 @@ export default function ProfileSetup({ user }) {
           style={{ width: "100%", marginBottom: 10 }}
         />
 
-        {/* CAMPO ESPORTE PADRONIZADO */}
         <select
           value={esporte}
           onChange={e => setEsporte(e.target.value)}
