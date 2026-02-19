@@ -28,10 +28,10 @@ export default function Dashboard() {
     setLoading(false);
   }
 
-  async function logout() {
-    await supabase.auth.signOut();
-    window.location.reload();
-  }
+async function logout() {
+  await supabase.auth.signOut();
+  window.location.href = "/";
+}
 
   if (loading) {
     return (
