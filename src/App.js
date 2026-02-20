@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
@@ -38,8 +37,6 @@ function App() {
   if (loading) return <div style={{ padding: 40 }}>Carregando...</div>;
 
   return (
-    <BrowserRouter>
-      <Routes>
 
         {/* SEM LOGIN */}
         {!user && (
@@ -61,9 +58,6 @@ function App() {
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}
-
-      </Routes>
-    </BrowserRouter>
   );
 }
 
