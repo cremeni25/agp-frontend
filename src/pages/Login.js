@@ -3,51 +3,100 @@ import { supabase } from "../supabaseClient";
 
 export default function Login() {
   const [email, setEmail] = useState("");
-  const [msg, setMsg] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async function entrar(e) {
+  async function fazerLogin(e) {
     e.preventDefault();
+    setErro("");
+    setLoading(true);
 
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      options: {
-        emailRedirectTo: window.location.origin
-      }
+      password: senha,
     });
 
+    setLoading(false);
+
     if (error) {
-      setMsg(error.message);
+      setErro("Email ou senha inválidos.");
     } else {
-      setMsg("Verifique seu email para acessar o AGP.");
+      window.location.reload();
     }
   }
 
   return (
-    <div style={{
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: "#0f172a",
-      color: "white",
-      fontFamily: "Arial"
-    }}>
-      <form onSubmit={entrar} style={{ width: 320 }}>
-        <h2>AGP Sports Intelligence</h2>
+    <div style={styles.container}>
+      <form style={styles.card} onSubmit={fazerLogin}>
+        <h2 style={styles.titulo}>AGP Sports Intelligence</h2>
 
         <input
-          placeholder="Digite seu email"
+          style={styles.input}
+          type="email"
+          placeholder="Seu email"
           value={email}
-          onChange={e => setEmail(e.target.value)}
-          style={{ width: "100%", marginBottom: 12 }}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
 
-        <button style={{ width: "100%" }}>
-          Entrar
+        <input
+          style={styles.input}
+          type="password"
+          placeholder="Sua senha"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          required
+        />
+
+        <button style={styles.botao} disabled={loading}>
+          {loading ? "Entrando..." : "Entrar"}
         </button>
 
-        <p style={{ marginTop: 12 }}>{msg}</p>
+        {erro && <p style={styles.erro}>{erro}</p>}
       </form>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    display: "flex",
+    height: "100vh",
+    alignItems: "center",
+    justifyContent: "center",
+    background: "#0b1d3a",
+  },
+  card: {
+    background: "#132a4a",
+    padding: 40,
+    borderRadius: 12,
+    width: 320,
+    textAlign: "center",
+  },
+  titulo: {
+    color: "#fff",
+    marginBottom: 20,
+  },
+  input: {
+    width: "100%",
+    padding: 12,
+    marginBottom: 15,
+    borderRadius: 6,
+    border: "none",
+  },
+  botao: {
+    width: "100%",
+    padding: 12,
+    background: "#ff4d4d",
+    border: "none",
+    color: "#fff",
+    fontWeight: "bold",
+    borderRadius: 6,
+    cursor: "pointer",
+  },
+  erro: {
+    color: "#ff8080",
+    marginTop: 15,
+  },
+};
