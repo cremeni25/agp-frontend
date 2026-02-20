@@ -10,68 +10,47 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function iniciar() {
-      const { data: { session } } = await supabase.auth.getSession();
+    const carregar = async () => {
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
 
-      if (!session) {
-        setUser(null);
+      const currentUser = session?.user || null;
+      setUser(currentUser);
+
+      if (!currentUser) {
         setLoading(false);
         return;
       }
 
-      const currentUser = session.user;
-      setUser(currentUser);
-
-      const { data: perfilData, error } = await supabase
+      const { data: perfilData } = await supabase
         .from("perfis_atletas")
         .select("*")
         .eq("auth_id", currentUser.id)
-        .single();
+        .maybeSingle();
 
-      if (!error) {
-        setPerfil(perfilData);
-      }
-
+      setPerfil(perfilData);
       setLoading(false);
-    }
+    };
 
-    iniciar();
-
-    // 🔑 ESCUTA LOGIN / LOGOUT EM TEMPO REAL
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session) {
-          setUser(session.user);
-
-          const { data: perfilData } = await supabase
-            .from("perfis_atletas")
-            .select("*")
-            .eq("auth_id", session.user.id)
-            .single();
-
-          setPerfil(perfilData);
-        } else {
-          setUser(null);
-          setPerfil(null);
-        }
-      }
-    );
-
-    return () => listener.subscription.unsubscribe();
+    carregar();
   }, []);
 
-  if (loading) return <div>Carregando...</div>;
+  if (loading) {
+    return (
+      <div style={{ padding: 40, fontSize: 20 }}>
+        Carregando...
+      </div>
+    );
+  }
 
-  // 👉 NÃO LOGADO → LOGIN
   if (!user) {
     return <Login />;
   }
 
-  // 👉 LOGADO SEM PERFIL → CADASTRO
   if (!perfil) {
     return <ProfileSetup user={user} />;
   }
 
-  // 👉 PERFIL OK → DASHBOARD
   return <Dashboard user={user} perfil={perfil} />;
 }
