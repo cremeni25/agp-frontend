@@ -4,99 +4,76 @@ import { supabase } from "../supabaseClient";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [erro, setErro] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
 
-  async function fazerLogin(e) {
+  async function entrar(e) {
     e.preventDefault();
-    setErro("");
-    setLoading(true);
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password: senha,
     });
 
-    setLoading(false);
+    if (error) setMsg(error.message);
+  }
 
-    if (error) {
-      setErro("Email ou senha inválidos.");
-    } else {
-      window.location.reload();
+  async function resetarSenha() {
+    if (!email) {
+      setMsg("Digite seu email primeiro.");
+      return;
     }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+
+    if (error) setMsg(error.message);
+    else setMsg("Email de recuperação enviado.");
   }
 
   return (
-    <div style={styles.container}>
-      <form style={styles.card} onSubmit={fazerLogin}>
-        <h2 style={styles.titulo}>AGP Sports Intelligence</h2>
+    <div style={{
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      background: "#0f172a",
+      color: "white",
+      fontFamily: "Arial"
+    }}>
+      <form onSubmit={entrar} style={{ width: 320 }}>
+        <h2>AGP Sports Intelligence</h2>
 
         <input
-          style={styles.input}
-          type="email"
-          placeholder="Seu email"
+          placeholder="Email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          onChange={e => setEmail(e.target.value)}
+          style={{ width: "100%", marginBottom: 10 }}
         />
 
         <input
-          style={styles.input}
           type="password"
-          placeholder="Sua senha"
+          placeholder="Senha"
           value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          required
+          onChange={e => setSenha(e.target.value)}
+          style={{ width: "100%", marginBottom: 10 }}
         />
 
-        <button style={styles.botao} disabled={loading}>
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
+        <button style={{ width: "100%" }}>Entrar</button>
 
-        {erro && <p style={styles.erro}>{erro}</p>}
+        <p
+          onClick={resetarSenha}
+          style={{
+            cursor: "pointer",
+            marginTop: 12,
+            color: "#38bdf8"
+          }}
+        >
+          Esqueci minha senha
+        </p>
+
+        <p style={{ marginTop: 12 }}>{msg}</p>
       </form>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: "flex",
-    height: "100vh",
-    alignItems: "center",
-    justifyContent: "center",
-    background: "#0b1d3a",
-  },
-  card: {
-    background: "#132a4a",
-    padding: 40,
-    borderRadius: 12,
-    width: 320,
-    textAlign: "center",
-  },
-  titulo: {
-    color: "#fff",
-    marginBottom: 20,
-  },
-  input: {
-    width: "100%",
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 6,
-    border: "none",
-  },
-  botao: {
-    width: "100%",
-    padding: 12,
-    background: "#ff4d4d",
-    border: "none",
-    color: "#fff",
-    fontWeight: "bold",
-    borderRadius: 6,
-    cursor: "pointer",
-  },
-  erro: {
-    color: "#ff8080",
-    marginTop: 15,
-  },
-};
