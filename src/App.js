@@ -11,27 +11,53 @@ export default function App() {
 
   useEffect(() => {
     async function iniciar() {
-      const { data } = await supabase.auth.getSession();
-      const currentUser = data.session?.user;
+      const { data: { session } } = await supabase.auth.getSession();
 
-      setUser(currentUser);
-
-      if (!currentUser) {
+      if (!session) {
+        setUser(null);
         setLoading(false);
         return;
       }
 
-      const { data: perfilData } = await supabase
+      const currentUser = session.user;
+      setUser(currentUser);
+
+      const { data: perfilData, error } = await supabase
         .from("perfis_atletas")
         .select("*")
         .eq("auth_id", currentUser.id)
         .single();
 
-      setPerfil(perfilData);
+      if (!error) {
+        setPerfil(perfilData);
+      }
+
       setLoading(false);
     }
 
     iniciar();
+
+    // 🔑 ESCUTA LOGIN / LOGOUT EM TEMPO REAL
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session) {
+          setUser(session.user);
+
+          const { data: perfilData } = await supabase
+            .from("perfis_atletas")
+            .select("*")
+            .eq("auth_id", session.user.id)
+            .single();
+
+          setPerfil(perfilData);
+        } else {
+          setUser(null);
+          setPerfil(null);
+        }
+      }
+    );
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   if (loading) return <div>Carregando...</div>;
@@ -41,7 +67,7 @@ export default function App() {
     return <Login />;
   }
 
-  // 👉 LOGADO MAS SEM PERFIL → CADASTRO
+  // 👉 LOGADO SEM PERFIL → CADASTRO
   if (!perfil) {
     return <ProfileSetup user={user} />;
   }
