@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
+
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -7,15 +8,14 @@ import Login from "./pages/Login";
 export default function App() {
   const [user, setUser] = useState(null);
   const [perfil, setPerfil] = useState(null);
+  const [nivel, setNivel] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const carregar = async () => {
-      const {
-        data: { session }
-      } = await supabase.auth.getSession();
+    async function iniciar() {
+      const { data } = await supabase.auth.getSession();
+      const currentUser = data.session?.user;
 
-      const currentUser = session?.user || null;
       setUser(currentUser);
 
       if (!currentUser) {
@@ -27,30 +27,44 @@ export default function App() {
         .from("perfis_atletas")
         .select("*")
         .eq("auth_id", currentUser.id)
-        .maybeSingle();
+        .single();
 
-      setPerfil(perfilData);
+      if (perfilData) {
+        setPerfil(perfilData);
+        setNivel(perfilData.nivel || "gestor"); // fallback seguro
+      }
+
       setLoading(false);
-    };
+    }
 
-    carregar();
+    iniciar();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      window.location.reload();
+    });
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   if (loading) {
     return (
-      <div style={{ padding: 40, fontSize: 20 }}>
-        Carregando...
+      <div style={{ padding: 40, fontSize: 18 }}>
+        Carregando AGP...
       </div>
     );
   }
 
+  // 🔒 NÃO LOGADO
   if (!user) {
     return <Login />;
   }
 
+  // 🧩 SEM PERFIL
   if (!perfil) {
     return <ProfileSetup user={user} />;
   }
 
-  return <Dashboard user={user} perfil={perfil} />;
+  // 🚀 LOGADO + PERFIL OK
+  // (futuro: dashboards por nível)
+  return <Dashboard user={user} perfil={perfil} nivel={nivel} />;
 }
