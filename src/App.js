@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-
 import ProfileSetup from "./pages/ProfileSetup";
 import Dashboard from "./pages/Dashboard";
 
-function App() {
+export default function App() {
   const [user, setUser] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,31 +33,25 @@ function App() {
     iniciar();
   }, []);
 
-  if (loading) return <div style={{ padding: 40 }}>Carregando...</div>;
+  if (loading) {
+    return (
+      <div style={{ padding: 40, fontFamily: "Arial" }}>
+        Carregando sistema AGP...
+      </div>
+    );
+  }
 
-  return (
+  if (!user) {
+    return (
+      <div style={{ padding: 40, fontFamily: "Arial" }}>
+        Usuário não autenticado.
+      </div>
+    );
+  }
 
-        {/* SEM LOGIN */}
-        {!user && (
-          <Route path="*" element={<Navigate to="/" />} />
-        )}
+  if (!perfil) {
+    return <ProfileSetup user={user} />;
+  }
 
-        {/* COM LOGIN MAS SEM PERFIL */}
-        {user && !perfil && (
-          <>
-            <Route path="/" element={<ProfileSetup user={user} />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        )}
-
-        {/* COM PERFIL */}
-        {user && perfil && (
-          <>
-            <Route path="/" element={<Dashboard user={user} perfil={perfil} />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        )}
-  );
+  return <Dashboard user={user} perfil={perfil} />;
 }
-
-export default App;
