@@ -41,13 +41,11 @@ export default function App() {
     );
   }
 
-  if (!user) {
-    return (
-      <div style={{ padding: 40, fontFamily: "Arial" }}>
-        Usuário não autenticado.
-      </div>
-    );
-  }
+import Login from "./pages/Login";
+
+if (!user) {
+  return <Login />;
+}
 
   if (!perfil) {
     return <ProfileSetup user={user} />;

@@ -3,72 +3,50 @@ import { supabase } from "../supabaseClient";
 
 export default function Login() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [msg, setMsg] = useState("");
 
-  async function handleLogin(e) {
+  async function entrar(e) {
     e.preventDefault();
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithOtp({
       email,
-      password,
+      options: {
+        emailRedirectTo: window.location.origin
+      }
     });
 
     if (error) {
-      setMessage(error.message);
-    }
-  }
-
-  async function handleRegister() {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      setMessage(error.message);
+      setMsg(error.message);
     } else {
-      setMessage("Conta criada! Verifique seu email.");
+      setMsg("Verifique seu email para acessar o AGP.");
     }
   }
 
   return (
     <div style={{
-      background: "#0f172a",
-      color: "white",
       height: "100vh",
       display: "flex",
       justifyContent: "center",
-      alignItems: "center"
+      alignItems: "center",
+      background: "#0f172a",
+      color: "white",
+      fontFamily: "Arial"
     }}>
-      <form onSubmit={handleLogin} style={{ width: 300 }}>
-        <h2>AGP Login</h2>
+      <form onSubmit={entrar} style={{ width: 320 }}>
+        <h2>AGP Sports Intelligence</h2>
 
         <input
-          type="email"
-          placeholder="Email"
+          placeholder="Digite seu email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          style={{ width: "100%", marginBottom: 10 }}
+          style={{ width: "100%", marginBottom: 12 }}
         />
 
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          style={{ width: "100%", marginBottom: 10 }}
-        />
-
-        <button type="submit" style={{ width: "100%" }}>
+        <button style={{ width: "100%" }}>
           Entrar
         </button>
 
-        <button type="button" onClick={handleRegister} style={{ width: "100%", marginTop: 10 }}>
-          Criar Conta
-        </button>
-
-        <p>{message}</p>
+        <p style={{ marginTop: 12 }}>{msg}</p>
       </form>
     </div>
   );
